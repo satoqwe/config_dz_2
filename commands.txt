@@ -1,0 +1,2 @@
+python -m unittest discover -s tests
+python visualizer.py --plantuml "C:\Users\321\Documents\config 2\plantuml.jar" --repo "C:\Users\321\Documents\gitclone" --tag v1.4
