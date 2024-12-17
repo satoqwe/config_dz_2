@@ -12,7 +12,6 @@ def get_commits(repo_path, tag_name):
             check=True, stdout=subprocess.PIPE, text=True
         )
         if not result.stdout.strip():
-            print(f"No commits found for the tag '{tag_name}'.")
             sys.exit(1)
 
         commits = [line.split() for line in result.stdout.strip().split("\n")]

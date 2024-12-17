@@ -9,6 +9,18 @@ from visualizer import get_commits, generate_plantuml, visualize_graph, main
 class TestGitVisualizer(unittest.TestCase):
 
     @patch('subprocess.run')
+    @patch('sys.stderr', new_callable=StringIO)  # Мокируем stderr
+    def test_get_commits_no_commits(self, mock_stderr, mock_run):
+        # Этот тест будет корректно проходить с мокированным subprocess
+        mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
+        repo_path = 'C:/Users/321/Documents/gitclone'  # Путь к репозиторию
+        tag_name = 'v1.4'
+        with self.assertRaises(SystemExit):
+            get_commits(repo_path, tag_name)
+        # Проверяем, что сообщение не выводится
+        self.assertNotIn("No commits found for the tag 'v1.4'.", mock_stderr.getvalue())
+
+    @patch('subprocess.run')
     def test_get_commits_success(self, mock_run):
         # Этот тест будет корректно проходить с мокированным subprocess
         mock_run.return_value = MagicMock(stdout="commit1 commit2\ncommit2", stderr="", returncode=0)
@@ -18,15 +30,6 @@ class TestGitVisualizer(unittest.TestCase):
         self.assertEqual(len(commits), 2)
         self.assertEqual(commits[0], ['commit1', 'commit2'])
         self.assertEqual(commits[1], ['commit2'])
-
-    @patch('subprocess.run')
-    def test_get_commits_no_commits(self, mock_run):
-        # Этот тест будет корректно проходить с мокированным subprocess
-        mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
-        repo_path = 'C:/Users/321/Documents/gitclone'  # Путь к репозиторию
-        tag_name = 'v1.4'
-        with self.assertRaises(SystemExit):
-            get_commits(repo_path, tag_name)
 
     def test_generate_plantuml(self):
         # Простой тест генерации PlantUML
